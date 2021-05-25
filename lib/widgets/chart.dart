@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './cart_bar.dart';
 import '../models/transection.dart';
 import 'package:intl/intl.dart';
 
@@ -30,18 +31,34 @@ class Chart extends StatelessWidget {
         'day': DateFormat.E().format(weekday).substring(0, 1),
         'amount': totalSum
       };
+    }).reversed.toList();
+  }
+
+  get totalSpending {
+    return grouptransactionsvalue.fold(0.0, (sum, item) {
+      return sum + item['amount'];
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Card(
-        elevation: 6,
-        margin: EdgeInsets.all(20),
+    return Card(
+      elevation: 6,
+      margin: EdgeInsets.all(20),
+      child: Container(
+        padding: EdgeInsets.all(10),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: grouptransactionsvalue.map((e) {
-            return Text('${e['day']} : ${e['amount']}');
+            return Flexible(
+              fit: FlexFit.tight,
+              child: ChartBar(
+                  label: e['day'],
+                  spendingAmount: e['amount'],
+                  spendingPctOfTotal: totalSpending == 0.0
+                      ? 0.0
+                      : (e['amount'] as double) / totalSpending),
+            );
           }).toList(),
         ),
       ),
